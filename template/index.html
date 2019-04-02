@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Telematic Device</title>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<link type="text/css" rel="stylesheet" href="../static/css/main.css"  media="screen,projection"/>
+	<link type="text/css" rel="stylesheet" href="../static/css/materialize.min.css"  media="screen,projection"/>
+	<script type="text/javascript" src="../static/js/jquery-3.0.0.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" href="../static/css/font-awesome.min.css">
+</head>
+
+<body>
+	<h3 style="text-align : center; color : rgb(255,0,0);font-weight : bold">Welcome to the Telematic Device</h3>
+	<h5 style="text-align : center; margin : 30px;">EE381 Project - Shivam and Akash</h5>
+
+	<div id="insert_data">
+
+	</div>
+			
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+
+			function getCookie(name) {
+			    var cookieValue = null;
+			    if (document.cookie && document.cookie != '') {
+			        var cookies = document.cookie.split(';');
+			        for (var i = 0; i < cookies.length; i++) {
+			            var cookie = jQuery.trim(cookies[i]);
+			            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+			                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+			                break;
+			            }
+			        }
+			    }
+			    return cookieValue;
+			}
+
+			var csrftoken = getCookie('csrftoken');
+
+
+
+			$.ajax({
+		       	url : 'http://127.0.0.1:8000/data_extract/',
+				type : "GET",
+				data : {csrfmiddlewaretoken : csrftoken},
+				success : function(json){
+					var html = [
+						'<table>',
+							'<thead>',
+								'<tr>',
+									'<th>Distance</th>',
+		           					'<th>Speed</th>',
+		           					'<th>Acceleration</th>',
+			   						'<th>Direction</th>',
+			   						'<th>Date</th>',
+								'</tr>',
+							'</thead>',
+							'<tbody>',
+					].join("\n")
+					number_of_data = Object.keys(json).length;
+		                	for(i = 0; i<number_of_data;i++){
+		                   		html += [
+								'<tr>',
+									'<td>'+json[i]["distance"]+'</td>',
+									'<td>'+json[i]["speed"]+'</td>',
+									'<td>'+json[i]["acceleration"]+'</td>',
+									'<td>'+json[i]["direction"]+'</td>',
+									'<td>'+json[i]["date"]+'</td>',
+								'</tr>',
+							].join("\n");    			
+		        	       	};
+					html += [
+							'</tbody>',
+						'</table>',
+					].join("\n");
+					$("#insert_data").append(html);
+		            	},
+				error : function(xhr,errmsg,err) {
+					console.log(xhr.status + ": " + xhr.responseText);
+		        }
+			});
+
+		});
+	</script>
+</body>
+</html>
